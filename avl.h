@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <iostream>
 #include <iomanip>
+using namespace std;
 
 template <class T>
 struct Node {
@@ -11,6 +12,21 @@ struct Node {
     Node *left;
     Node *right;
     uint32_t h = 1;
+
+    Node(T &value, Node *left, Node *right) {
+        this->value = value;
+        this->left = left;
+        this->right = right;
+        this->h = 1 + std::max(Node::height(left), Node::height(right));
+    }
+
+    Node(Node *n) {
+        this->value = n->value;
+        this->left = n->left;
+        this->right = n->right;
+        this->h = n->h;
+    }
+
 
     static inline uint32_t height(Node *n) {
         return n == nullptr ? 0 : n->h;
@@ -50,8 +66,10 @@ template <class T>
 struct AVL {
     Node<T> *root = nullptr;
 
-    inline void insert(T val) {
-        this->root = _insert(this->root, val);
+    inline AVL* insert(T val) {
+        AVL *avl = new AVL;
+        avl->root = _insert(this->root, val);
+        return avl;
     }
 
     /*
@@ -74,7 +92,7 @@ private:
     /*
     left rotate:
         A          B
-        B   ->  A   C
+         B   ->  A   C
         x C       x
     returns pointer to B
     caller should update child pointers appropriately
@@ -93,8 +111,8 @@ private:
     /*
     right rotate:
         A        B
-        B   ->  C   A
-        C x         x
+       B   ->  C   A
+      C x         x
     returns pointer to B
     caller should update child pointers appropriately
     */
@@ -114,10 +132,9 @@ private:
     */
     static Node<T>* _insert(Node<T> *r, T val) {
         if (r == nullptr) {
-            Node<T> *n = new Node<T>();
-            n->value = val;
-            return n;
+            return new Node<T>(val, nullptr, nullptr);
         }
+        r = new Node<T>(r);
         // assumes no duplicates since the graph has no
         // repeat edges
         if (val < r->value) {

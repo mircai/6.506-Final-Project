@@ -16,11 +16,12 @@ struct CTree {
             T &val = vals[i];
             auto h = std::hash<T>{}(val);
             if (h % b == 0) {
-                avl->insert({val});
+                avl = avl->insert({val});
                 heads[i] = true;
             }
         }
         // insert tails
+        // TODO: inserting tails should also be purely functional (return a new copy)
         for (int i = 0; i < n; i ++) {
             if (!heads[i]) {
                 T &val = vals[i];
@@ -35,5 +36,4 @@ struct CTree {
     note that initialization cannot use the function since all
     heads need to be inserted before anything else
     */
-
 };
