@@ -6,14 +6,17 @@
 #include <iomanip>
 using namespace std;
 
-template <class T>
+template <class K, class V>
 struct Node {
-    T value;
+    using KV = std::pair<K, V>;
+    K key;
+    V value;
     Node *left;
     Node *right;
     uint32_t h = 1;
 
-    Node(T &value, Node *left, Node *right) {
+    Node(K &key, V &value, Node *left, Node *right) {
+        this->key = key;
         this->value = value;
         this->left = left;
         this->right = right;
@@ -21,12 +24,16 @@ struct Node {
     }
 
     Node(Node *n) {
+        this->key = n->key;
         this->value = n->value;
         this->left = n->left;
         this->right = n->right;
         this->h = n->h;
     }
 
+    inline KV* getKV() {
+        return new KV(this->key, this->value);
+    }
 
     static inline uint32_t height(Node *n) {
         return n == nullptr ? 0 : n->h;
@@ -44,7 +51,7 @@ struct Node {
         _print(this, 0);
     }
 
-    static void _print(Node<T>* p, int indent) {
+    static void _print(Node *p, int indent) {
         if(p != nullptr) {
             if(p->right) {
                 _print(p->right, indent+4);
@@ -53,7 +60,7 @@ struct Node {
                 std::cout << std::setw(indent) << ' ';
             }
             if (p->right) std::cout<<" /\n" << std::setw(indent) << ' ';
-            std::cout<< p->value << "\n ";
+            std::cout<< p->key << "\n ";
             if(p->left) {
                 std::cout << std::setw(indent) << ' ' <<" \\\n";
                 _print(p->left, indent+4);
@@ -62,30 +69,31 @@ struct Node {
     }
 };
 
-template <class T>
+template <class K, class V>
 struct AVL {
-    Node<T> *root = nullptr;
+    using KV = std::pair<K, V>;
+    Node<K, V> *root = nullptr;
 
-    inline AVL* insert(T val) {
+    inline AVL* insert(K key, V val) {
         AVL *avl = new AVL;
-        avl->root = _insert(this->root, val);
+        avl->root = _insert(this->root, key, val);
         return avl;
     }
 
     /*
-    returns a pointer to the largest element < val
+    returns a pointer to the largest element < key
     if no such element exists, returns nullptr
     */
-    inline T* find_lesser(T val) {
-        return _find_lesser(this->root, val);
+    inline KV* find_lesser(K key) {
+        return _find_lesser(this->root, key);
     }
 
     /*
-    returns a pointer to the largest element > val
+    returns a pointer to the largest element > key
     if no such element exists, returns nullptr
     */
-    inline T* find_greater(T val) {
-        return _find_greater(this->root, val);
+    inline KV* find_greater(K key) {
+        return _find_greater(this->root, key);
     }
 
 private:
@@ -97,14 +105,14 @@ private:
     returns pointer to B
     caller should update child pointers appropriately
     */
-    static inline Node<T>* left(Node<T> *a) {
+    static inline Node<K, V>* left(Node<K, V> *a) {
         auto b = a->right;
         auto c = b->right; // could be nullptr
         auto x = b->left; // could be nullptr
         b->left = a;
         a->right = x;
-        Node<T>::update_height(a);
-        Node<T>::update_height(b);
+        Node<K, V>::update_height(a);
+        Node<K, V>::update_height(b);
         return b;
     }
 
@@ -116,34 +124,35 @@ private:
     returns pointer to B
     caller should update child pointers appropriately
     */
-    static inline Node<T> *right(Node<T> *a) {
+    static inline Node<K, V> *right(Node<K, V> *a) {
         auto b = a->left;
         auto c = b->left;
         auto x = b->right; // could be nullptr
         b->right = a;
         a->left = x;
-        Node<T>::update_height(a);
-        Node<T>::update_height(b);
+        Node<K, V>::update_height(a);
+        Node<K, V>::update_height(b);
         return b;
     }
 
     /*
     insert `n` at subtree with root `r`
     */
-    static Node<T>* _insert(Node<T> *r, T val) {
+    static Node<K, V>* _insert(Node<K, V> *r, K key, V val) {
         if (r == nullptr) {
-            return new Node<T>(val, nullptr, nullptr);
+            return new Node<K, V>(key, val, nullptr, nullptr);
         }
-        r = new Node<T>(r);
-        // assumes no duplicates since the graph has no
-        // repeat edges
-        if (val < r->value) {
-            r->left = _insert(r->left, val);
+        r = new Node<K, V>(r);
+        if (key == r->key) {
+            r->value = val;
+        } else
+        if (key < r->key) {
+            r->left = _insert(r->left, key, val);
         } else {
-            r->right = _insert(r->right, val);
+            r->right = _insert(r->right, key, val);
         }
-        Node<T>::update_height(r);
-        int skew = Node<T>::get_skew(r);
+        Node<K, V>::update_height(r);
+        int skew = Node<K, V>::get_skew(r);
         if (skew > 1) {
             if (val > r->left->value) {
                 r->left = left(r->left);
@@ -162,26 +171,26 @@ private:
     /*
     see find_lesser
     */
-    static T* _find_lesser(Node<T> *r, T val) {
+    static KV* _find_lesser(Node<K, V> *r, K key) {
         if (r == nullptr) return nullptr;
-        if (r->value < val) {
-            T *right_res = _find_lesser(r->right, val);
-            return right_res == nullptr ? &r->value : right_res;
+        if (r->key < key) {
+            KV *right_res = _find_lesser(r->right, key);
+            return right_res == nullptr ? r->getKV() : right_res;
         } else {
-            return _find_lesser(r->left, val);
+            return _find_lesser(r->left, key);
         }
     }
 
     /*
     see find_greater
     */
-    static T* _find_greater(Node<T> *r, T val) {
+    static KV* _find_greater(Node<K, V> *r, K key) {
         if (r == nullptr) return nullptr;
-        if (r->value > val) {
-            T *left_res = _find_greater(r->left, val);
-            return left_res == nullptr ? &r->value : left_res;
+        if (r->key > key) {
+            KV *left_res = _find_greater(r->left, key);
+            return left_res == nullptr ? r->getKV() : left_res;
         } else {
-            return _find_greater(r->right, val);
+            return _find_greater(r->right, key);
         }
     }
 };

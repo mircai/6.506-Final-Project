@@ -5,28 +5,35 @@ template <class T>
 struct CTree {
     using TT = std::vector<T>;
     TT prefix;
-    AVL<TT> *avl;
+    AVL<T, TT> *avl;
 
     CTree(TT vals, int b) {
         int n = vals.size();
-        this->avl = new AVL<TT>();
+        this->avl = new AVL<T, TT>();
         std::vector<bool> heads(n);
         // insert heads
         for (int i = 0; i < n; i ++) {
             T &val = vals[i];
             auto h = std::hash<T>{}(val);
             if (h % b == 0) {
-                avl = avl->insert({val});
+                avl = avl->insert(val, {});
                 heads[i] = true;
             }
         }
         // insert tails
-        // TODO: inserting tails should also be purely functional (return a new copy)
+        // no need for initialization to be purely functional
         for (int i = 0; i < n; i ++) {
             if (!heads[i]) {
                 T &val = vals[i];
-                TT *head = avl->find_lesser({val});
-                (head == nullptr ? &prefix : head)->push_back(val);
+                auto p = avl->find_lesser(val);
+                if (p == nullptr) {
+                    prefix.push_back(val);
+                } else {
+                    T head = p->first;
+                    TT tail(p->second);
+                    tail.push_back(val);
+                    avl = avl->insert(head, tail);
+                }
             }
         }
     }
