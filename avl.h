@@ -219,6 +219,9 @@ private:
     static inline void _get_all_nodes(Node<K, V> *a, vector<K> &curr_nodes) {
         if (a == nullptr) return;
         curr_nodes.push_back(a->key);
+        for (auto val: a->value) {
+            curr_nodes.push_back(val);
+        }
         _get_all_nodes(a->left, curr_nodes);
         _get_all_nodes(a->right, curr_nodes);
         return;

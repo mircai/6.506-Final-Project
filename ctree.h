@@ -45,7 +45,12 @@ struct CTree {
         this->avl = new AVL<T, TT>();
         // insert heads
         for (auto head: heads) {
-            avl = avl->insert(head, {});
+            for (auto elm: elms) {
+                if (elm == head) {
+                    avl = avl->insert(head, {});
+                    break;
+                }
+            }
         }
         // insert tails
         // no need for initialization to be purely functional

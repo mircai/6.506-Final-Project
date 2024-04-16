@@ -2,6 +2,8 @@
 #include "timer.h"
 using namespace std;
 
+#define print(v) {cout<<((v)->key)<<" "; for(auto&i:((v)->value))cout<<i<<" ";cout<<endl;}
+
 
 template <class K = int, class V = CTree<K>>
 void khop(AVL<K, V> &graph, vector<K> &all_transits, int n_samples) {
@@ -44,6 +46,7 @@ int main() {
     AVL<int, CTree<int>> tree;
     for(int i = 0; i < total_nodes; i ++){
         CTree<int> ctree(heads, adj_list[i]);
+        // print(ctree.avl->root);
         tree = *tree.insert(i, ctree);
     }
 
