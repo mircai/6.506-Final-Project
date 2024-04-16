@@ -44,7 +44,7 @@ int main() {
     AVL<int, CTree<int>> tree;
     for(int i = 0; i < total_nodes; i ++){
         CTree<int> ctree(heads, adj_list[i]);
-        tree.insert(i, ctree);
+        tree = *tree.insert(i, ctree);
     }
 
     // randomly sample initial transits

@@ -6,7 +6,7 @@ template <class T>
 struct CTree {
     using TT = std::vector<T>;
     TT prefix;
-    AVL<T, TT> *avl;
+    AVL<T, TT> *avl = new AVL<T, TT>();
 
     CTree(TT vals, int b) {
         int n = vals.size();

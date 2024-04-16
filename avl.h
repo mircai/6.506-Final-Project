@@ -17,7 +17,7 @@ struct Node {
     Node *right;
     uint32_t h = 1;
 
-    Node(K &key, V &value, Node *left, Node *right) :
+    Node(const K &key, const V &value, Node *left, Node *right) :
         key(key),
         value(value),
         left(left),
