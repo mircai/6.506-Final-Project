@@ -1,9 +1,22 @@
 #include "khop.h"
 #include "timer.h"
+#include "graph.h"
 using namespace std;
 
 #define print(v) {cout<<((v)->key)<<" "; for(auto&i:((v)->value))cout<<i<<" ";cout<<endl;}
 
+AVL<int, CTree<int>> load_csr_to_tree(Graph &g, int b) {
+    // make into tree
+    AVL<int, CTree<int>> tree;
+    for(int i = 0; i < g.n_vertices; i ++){
+        int n_edges = g.get_num_edges(i);
+        int *edge_list = g.get_edges(i);
+        CTree<int> ctree(edge_list, n_edges, b);
+        // print(ctree.avl->root);
+        tree = *tree.insert(i, ctree);
+    }
+    return tree;
+}
 
 template <class K = int, class V = CTree<K>>
 void khop(AVL<K, V> &graph, vector<K> &all_transits, int n_samples) {
@@ -33,22 +46,30 @@ void khop(AVL<K, V> &graph, vector<K> &all_transits, int n_samples) {
 
     t.Stop();
 
-    std::cout << "result size: " << step_count + t_begin << endl;
-    std::cout << "Finished sampling in " << t.Seconds() << " sec" << endl;
+    cout << "result size: " << step_count + t_begin << endl;
+    cout << "Finished sampling in " << t.Seconds() << " sec" << endl;
 }
 
-int main() {
-    // create example graph in fig 4 of aspen paper
-    vector<vector<int>> adj_list = {{1,2}, {0,2}, {0,1,3,4,5}, {2,5}, {2,5}, {2,3,4}};
-    set<int> heads = {1,2};
-    int total_nodes = 6;
+int main(int argc, char* argv[]) {
+    // // create example graph in fig 4 of aspen paper
+    // vector<vector<int>> adj_list = {{1,2}, {0,2}, {0,1,3,4,5}, {2,5}, {2,5}, {2,3,4}};
+    // set<int> heads = {1,2};
+    // int total_nodes = 6;
 
-    AVL<int, CTree<int>> tree;
-    for(int i = 0; i < total_nodes; i ++){
-        CTree<int> ctree(heads, adj_list[i]);
-        // print(ctree.avl->root);
-        tree = *tree.insert(i, ctree);
-    }
+    // AVL<int, CTree<int>> tree;
+    // for(int i = 0; i < total_nodes; i ++){
+    //     CTree<int> ctree(heads, adj_list[i]);
+    //     // print(ctree.avl->root);
+    //     tree = *tree.insert(i, ctree);
+    // }
+
+    // load graph given in argument into tree rep
+    string in_prefix = argv[1];
+    Graph g;
+    load_graph(g, in_prefix);
+    int block_size = 3;
+    int total_nodes = g.n_vertices;
+    AVL<int, CTree<int>> tree = load_csr_to_tree(g, block_size);
 
     // randomly sample initial transits
     int n_samples = num_samples();
@@ -72,13 +93,13 @@ int main() {
     khop(tree, transits, n_samples);
 
     cout << "Completed sampling!" << endl;
-    std::cout << "results\n";
+    cout << "results\n";
     int _size = sample_size(-1) * n_samples;
     int total_size = 0;
     for (int step = 0; step <= steps(); step++) {
-        std::cout << "\n";
+        cout << "\n";
         for (int i = 0; i < _size; i++) {
-            std::cout << transits[i + total_size] << " ";
+            cout << transits[i + total_size] << " ";
             // cout << i + p_size << " ";
         }
         total_size += _size;

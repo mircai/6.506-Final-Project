@@ -30,7 +30,7 @@ inline int num_samples() {
     return 1;
 }
 
-template <class T = int>
+template <class T = uint32_t>
 vector<T> get_initial_transits(T seeds_size, T graph_size) {
     vector<T> n_ids;
     for (int i = 0; i < seeds_size; i++) {

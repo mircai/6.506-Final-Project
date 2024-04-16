@@ -15,4 +15,6 @@ int main(int argc, char* argv[]) {
     // for (int i = 0; i < g.n_edges; i++) {
     //     cout << " " << g.edges[i];
     // }
+    // cout << endl;
+    // cout << g.get_num_edges(2) << endl;
 }

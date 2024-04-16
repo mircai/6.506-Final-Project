@@ -10,8 +10,17 @@ struct Graph {
     int vid_size, eid_size, vlabel_size, elabel_size;
     int feat_len, num_vertex_classes, num_edge_classes;
     uint32_t max_degree, n_vertices;
-    uint32_t *edges;
+    int *edges;
     int64_t *vertices;
+
+    inline int get_num_edges(int node) {
+        return vertices[node + 1] - vertices[node];
+    }
+
+    inline int* get_edges(int node) {
+        int64_t start = vertices[node];
+        return edges + start;
+    }
 };
 
 void read_meta_info(Graph &g, std::string prefix) {
