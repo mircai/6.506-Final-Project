@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <iostream>
 #include <iomanip>
+#include <vector>
+#include <set>
 using namespace std;
 
 template <class K, class V>
@@ -96,6 +98,16 @@ struct AVL {
         return _find_greater(this->root, key);
     }
 
+    inline Node<K,V>* get_node(K key) {
+        return _find(this->root, key);
+    }
+
+    inline vector<K> get_all_nodes() {
+        vector<K> all_nodes;
+        _get_all_nodes(this->root, all_nodes);
+        return all_nodes;
+    }
+
 private:
     /*
     left rotate:
@@ -154,13 +166,13 @@ private:
         Node<K, V>::update_height(r);
         int skew = Node<K, V>::get_skew(r);
         if (skew > 1) {
-            if (val > r->left->value) {
+            if (key > r->left->key) {
                 r->left = left(r->left);
             }
             return right(r);
         }
         if (skew < -1) {
-            if (val < r->right->value) {
+            if (key < r->right->key) {
                 r->right = right(r->right);
             }
             return left(r);
@@ -192,5 +204,24 @@ private:
         } else {
             return _find_greater(r->right, key);
         }
+    }
+
+    static Node<K,V>* _find(Node<K, V> *r, K target) {
+        if (r == nullptr) return nullptr;
+        if (r->key == target) return r;
+        if (r->key > target) {
+            return _find(r->left, target);
+        }
+        else {
+            return _find(r->right, target);
+        }
+    }
+
+    static inline void _get_all_nodes(Node<K, V> *a, vector<K> &curr_nodes) {
+        if (a == nullptr) return;
+        curr_nodes.push_back(a->key);
+        _get_all_nodes(a->left, curr_nodes);
+        _get_all_nodes(a->right, curr_nodes);
+        return;
     }
 };

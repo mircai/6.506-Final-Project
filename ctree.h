@@ -1,5 +1,6 @@
 #include "avl.h"
 #include <vector>
+#include <set>
 
 template <class T>
 struct CTree {
@@ -37,10 +38,38 @@ struct CTree {
             }
         }
     }
+
+    // for testing w/set heads
+    CTree(std::set<T> heads, TT elms) {
+        int n = elms.size();
+        this->avl = new AVL<T, TT>();
+        // insert heads
+        for (auto head: heads) {
+            avl = avl->insert(head, {});
+        }
+        // insert tails
+        // no need for initialization to be purely functional
+        for (auto val: elms) {
+            if (!heads.count(val)) {
+                auto p = avl->find_lesser(val);
+                if (p == nullptr) {
+                    prefix.push_back(val);
+                } else {
+                    T head = p->first;
+                    TT tail(p->second);
+                    tail.push_back(val);
+                    avl = avl->insert(head, tail);
+                }
+            }
+        }
+    }
+
     /*
     TODO: add insert function
 
     note that initialization cannot use the function since all
     heads need to be inserted before anything else
     */
+//    inline insert()
+
 };
