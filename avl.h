@@ -17,21 +17,20 @@ struct Node {
     Node *right;
     uint32_t h = 1;
 
-    Node(K &key, V &value, Node *left, Node *right) {
-        this->key = key;
-        this->value = value;
-        this->left = left;
-        this->right = right;
+    Node(const K &key, const V &value, Node *left, Node *right) :
+        key(key),
+        value(value),
+        left(left),
+        right(right) {
         this->h = 1 + std::max(Node::height(left), Node::height(right));
     }
 
-    Node(Node *n) {
-        this->key = n->key;
-        this->value = n->value;
-        this->left = n->left;
-        this->right = n->right;
-        this->h = n->h;
-    }
+    Node(Node *n) :
+        key(n->key),
+        value(n->value),
+        left(n->left),
+        right(n->right),
+        h(n->h) {}
 
     inline KV* getKV() {
         return new KV(this->key, this->value);
