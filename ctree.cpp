@@ -6,6 +6,7 @@ using namespace std;
 
 int main() {
     vector<int> vals = {1,2,3,4,5,6,7,8,9,10};
+    cout << "hi\n";
     CTree<int> t(vals, 3);
     auto avl = t.avl;
     print(avl->root);

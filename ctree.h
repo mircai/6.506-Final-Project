@@ -17,7 +17,7 @@ struct CTree {
             T &val = vals[i];
             auto h = std::hash<T>{}(val);
             if (h % b == 0) {
-                avl = avl->insert(val, {});
+                avl->root = avl->_insert(avl->root, val, {}, true);
                 heads[i] = true;
             }
         }
@@ -30,10 +30,8 @@ struct CTree {
                 if (p == nullptr) {
                     prefix.push_back(val);
                 } else {
-                    T head = p->first;
-                    TT tail(p->second);
-                    tail.push_back(val);
-                    avl = avl->insert(head, tail);
+                    TT *tail = p->second;
+                    tail->push_back(val);
                 }
             }
         }
@@ -60,10 +58,8 @@ struct CTree {
                 if (p == nullptr) {
                     prefix.push_back(val);
                 } else {
-                    T head = p->first;
-                    TT tail(p->second);
-                    tail.push_back(val);
-                    avl = avl->insert(head, tail);
+                    TT *tail = p->second;
+                    tail->push_back(val);
                 }
             }
         }
@@ -90,10 +86,8 @@ struct CTree {
                 if (p == nullptr) {
                     prefix.push_back(val);
                 } else {
-                    T head = p->first;
-                    TT tail(p->second);
-                    tail.push_back(val);
-                    avl = avl->insert(head, tail);
+                    TT *tail = p->second;
+                    tail->push_back(val);
                 }
             }
         }

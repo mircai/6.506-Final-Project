@@ -13,7 +13,7 @@ int main() {
     cout << "=============================================" << endl;
     tree32.root->print();
     cout << "=============================================" << endl;
-    cout << tree.find_lesser(200)->first << endl;
-    cout << tree32.find_lesser(200)->first << endl;
+    cout << *tree.find_lesser(200)->first << endl;
+    cout << *tree32.find_lesser(200)->first << endl;
     cout << "done" << endl;
 }

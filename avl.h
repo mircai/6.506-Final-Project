@@ -10,7 +10,7 @@ using namespace std;
 
 template <class K, class V>
 struct Node {
-    using KV = std::pair<K, V>;
+    using KV = std::pair<K*, V*>;
     K key;
     V value;
     Node *left;
@@ -33,7 +33,7 @@ struct Node {
         h(n->h) {}
 
     inline KV* getKV() {
-        return new KV(this->key, this->value);
+        return new KV(&this->key, &this->value);
     }
 
     static inline uint32_t height(Node *n) {
@@ -72,12 +72,12 @@ struct Node {
 
 template <class K, class V>
 struct AVL {
-    using KV = std::pair<K, V>;
+    using KV = std::pair<K*, V*>;
     Node<K, V> *root = nullptr;
 
     inline AVL* insert(K key, V val) {
         AVL *avl = new AVL;
-        avl->root = _insert(this->root, key, val);
+        avl->root = _insert(this->root, key, val, false);
         return avl;
     }
 
@@ -107,7 +107,6 @@ struct AVL {
         return all_nodes;
     }
 
-private:
     /*
     left rotate:
         A          B
@@ -149,18 +148,18 @@ private:
     /*
     insert `n` at subtree with root `r`
     */
-    static Node<K, V>* _insert(Node<K, V> *r, K key, V val) {
+    static Node<K, V>* _insert(Node<K, V> *r, K key, V val, bool mut) {
         if (r == nullptr) {
             return new Node<K, V>(key, val, nullptr, nullptr);
         }
-        r = new Node<K, V>(r);
+        if (!mut) r = new Node<K, V>(r);
         if (key == r->key) {
             r->value = val;
         } else
         if (key < r->key) {
-            r->left = _insert(r->left, key, val);
+            r->left = _insert(r->left, key, val, mut);
         } else {
-            r->right = _insert(r->right, key, val);
+            r->right = _insert(r->right, key, val, mut);
         }
         Node<K, V>::update_height(r);
         int skew = Node<K, V>::get_skew(r);
