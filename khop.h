@@ -16,10 +16,10 @@ inline int nptr() {
 
 inline int sample_size(int step) {
     if (step == -1) return 1;
-    // if (step == 0) return 25;
-    // return 10;
-    if (step == 0) return 2;
-    return 3;
+    if (step == 0) return 25;
+    return 10;
+    // if (step == 0) return 2;
+    // return 3;
 }
 
 inline int steps() {
@@ -27,7 +27,7 @@ inline int steps() {
 }
 
 inline int num_samples() {
-    return 1;
+    return 4000;
 }
 
 template <class T = uint32_t>

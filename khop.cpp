@@ -6,6 +6,8 @@ using namespace std;
 #define print(v) {cout<<((v)->key)<<" "; for(auto&i:((v)->value))cout<<i<<" ";cout<<endl;}
 
 AVL<int, CTree<int>> load_csr_to_tree(Graph &g, int b) {
+    Timer t;
+    t.Start();
     // make into tree
     AVL<int, CTree<int>> tree;
     for(int i = 0; i < g.n_vertices; i ++){
@@ -15,6 +17,8 @@ AVL<int, CTree<int>> load_csr_to_tree(Graph &g, int b) {
         // print(ctree.avl->root);
         tree = *tree.insert(i, ctree);
     }
+    t.Stop();
+    cout << "Finished converting csr graph to tree in " << t.Seconds() << " sec" << endl;
     return tree;
 }
 
@@ -27,6 +31,7 @@ void khop(AVL<K, V> &graph, vector<K> &all_transits, int n_samples) {
     int t_begin = 0;
     int old_t_begin = 0;
     for (int step = 0; step < steps(); step++) {
+        // cout << "STEP " << step << endl;
         t_begin += step_count;
         step_count *= sample_size(step);
         prev_step_count *= sample_size(step-1);
@@ -93,16 +98,16 @@ int main(int argc, char* argv[]) {
     khop(tree, transits, n_samples);
 
     cout << "Completed sampling!" << endl;
-    cout << "results\n";
-    int _size = sample_size(-1) * n_samples;
-    int total_size = 0;
-    for (int step = 0; step <= steps(); step++) {
-        cout << "\n";
-        for (int i = 0; i < _size; i++) {
-            cout << transits[i + total_size] << " ";
-            // cout << i + p_size << " ";
-        }
-        total_size += _size;
-        _size *= sample_size(step);
-    }
+    // cout << "results\n";
+    // int _size = sample_size(-1) * n_samples;
+    // int total_size = 0;
+    // for (int step = 0; step <= steps(); step++) {
+    //     cout << "\n";
+    //     for (int i = 0; i < _size; i++) {
+    //         cout << transits[i + total_size] << " ";
+    //         // cout << i + p_size << " ";
+    //     }
+    //     total_size += _size;
+    //     _size *= sample_size(step);
+    // }
 }
