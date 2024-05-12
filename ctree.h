@@ -7,11 +7,18 @@ struct CTree {
     using TT = std::vector<T>;
     TT prefix;
     int b;
-    AVL<T, TT> *avl = new AVL<T, TT>();
+    AVL<T, TT> *avl; // = new AVL<T, TT>();
+
+    // copy constructor
+    CTree(CTree &other) {
+        prefix = other.prefix;
+        b = other.b;
+        avl = other.avl;
+    }
 
     CTree(TT vals, int b) : b(b) {
         int n = vals.size();
-        // this->avl = new AVL<T, TT>();
+        avl = new AVL<T, TT>();
         std::vector<bool> heads(n);
         // insert heads
         for (int i = 0; i < n; i ++) {
@@ -31,7 +38,7 @@ struct CTree {
                 if (p == nullptr) {
                     prefix.push_back(val);
                 } else {
-                    TT tail = p->value;
+                    TT &tail = p->value;
                     tail.push_back(val);
                 }
             }
@@ -41,7 +48,7 @@ struct CTree {
     // for testing w/set heads
     CTree(std::set<T> heads, TT elms) {
         int n = elms.size();
-        // this->avl = new AVL<T, TT>();
+        avl = new AVL<T, TT>();
         // insert heads
         for (auto head: heads) {
             for (auto elm: elms) {
@@ -59,7 +66,7 @@ struct CTree {
                 if (p == nullptr) {
                     prefix.push_back(val);
                 } else {
-                    TT tail = p->value;
+                    TT &tail = p->value;
                     tail.push_back(val);
                 }
             }
@@ -67,6 +74,7 @@ struct CTree {
     }
 
     CTree(int *edges, int64_t n_edges, int b) {
+        avl = new AVL<T, TT>();
         std::vector<bool> heads(n_edges);
         // insert heads
         for (int i = 0; i < n_edges; i++) {
@@ -87,7 +95,7 @@ struct CTree {
                 if (p == nullptr) {
                     prefix.push_back(val);
                 } else {
-                    TT tail = p->value;
+                    TT &tail = p->value;
                     tail.push_back(val);
                 }
             }
@@ -108,13 +116,38 @@ struct CTree {
 //     CTree _union(CTree other) {
 
 //     }
-    // CTree insert(T val) {
-    //     auto h = std::hash<T>{}(val);
-    //     // pointer to next smallest head
-    //     auto p = avl->find_lesser(val);
-    //     if (h % b == 0) {
-
-    //     }
-    // }
+    pair<TT, TT> splitChunk(TT &chunk, T &val) {
+        TT le, g;
+        for (T &e:chunk) {
+            (e <= val ? le : g).push_back(e);
+        }
+        return {le, g};
+    }
+    CTree insert(T val) {
+        CTree res(*this);
+        auto h = std::hash<T>{}(val);
+        // pointer to next smallest head
+        auto p = res.avl->find_lesser(val);
+        if (h % b == 0) {
+            if (p == nullptr) {
+                auto [le, g] = splitChunk(res.prefix, val);
+                res.prefix = le;
+                res.avl = res.avl->insert(val, g);
+            } else {
+                auto [le, g] = splitChunk(p->value, val);
+                res.avl = res.avl->insert(p->key, le);
+                res.avl->root = res.avl->_insert(res.avl->root, val, g, true);
+            }
+        } else {
+            if (p == nullptr) {
+                res.prefix.push_back(val);
+            } else {
+                TT new_tail = p->value; // '=' copies vector
+                new_tail.push_back(val);
+                res.avl = res.avl->insert(p->key, new_tail);
+            }
+        }
+        return res;
+    }
 
 };
