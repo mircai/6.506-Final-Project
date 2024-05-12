@@ -6,9 +6,10 @@ template <class T>
 struct CTree {
     using TT = std::vector<T>;
     TT prefix;
+    int b;
     AVL<T, TT> *avl = new AVL<T, TT>();
 
-    CTree(TT vals, int b) {
+    CTree(TT vals, int b) : b(b) {
         int n = vals.size();
         // this->avl = new AVL<T, TT>();
         std::vector<bool> heads(n);
@@ -30,8 +31,8 @@ struct CTree {
                 if (p == nullptr) {
                     prefix.push_back(val);
                 } else {
-                    TT *tail = p->second;
-                    tail->push_back(val);
+                    TT tail = p->value;
+                    tail.push_back(val);
                 }
             }
         }
@@ -58,8 +59,8 @@ struct CTree {
                 if (p == nullptr) {
                     prefix.push_back(val);
                 } else {
-                    TT *tail = p->second;
-                    tail->push_back(val);
+                    TT tail = p->value;
+                    tail.push_back(val);
                 }
             }
         }
@@ -86,8 +87,8 @@ struct CTree {
                 if (p == nullptr) {
                     prefix.push_back(val);
                 } else {
-                    TT *tail = p->second;
-                    tail->push_back(val);
+                    TT tail = p->value;
+                    tail.push_back(val);
                 }
             }
         }
@@ -99,6 +100,21 @@ struct CTree {
     note that initialization cannot use the function since all
     heads need to be inserted before anything else
     */
-//    inline insert()
+//     CTree batch_insert(TT elms) {
+//     return _union(CTree(elms, this->b));
+//     }
+
+//     // union of two ctrees
+//     CTree _union(CTree other) {
+
+//     }
+    // CTree insert(T val) {
+    //     auto h = std::hash<T>{}(val);
+    //     // pointer to next smallest head
+    //     auto p = avl->find_lesser(val);
+    //     if (h % b == 0) {
+
+    //     }
+    // }
 
 };

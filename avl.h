@@ -10,7 +10,6 @@ using namespace std;
 
 template <class K, class V>
 struct Node {
-    using KV = std::pair<K*, V*>;
     K key;
     V value;
     Node *left;
@@ -31,10 +30,6 @@ struct Node {
         left(n->left),
         right(n->right),
         h(n->h) {}
-
-    inline KV* getKV() {
-        return new KV(&this->key, &this->value);
-    }
 
     static inline uint32_t height(Node *n) {
         return n == nullptr ? 0 : n->h;
@@ -72,7 +67,6 @@ struct Node {
 
 template <class K, class V>
 struct AVL {
-    using KV = std::pair<K*, V*>;
     Node<K, V> *root = nullptr;
 
     inline AVL* insert(K key, V val) {
@@ -85,7 +79,7 @@ struct AVL {
     returns a pointer to the largest element < key
     if no such element exists, returns nullptr
     */
-    inline KV* find_lesser(K key) {
+    inline Node<K,V>* find_lesser(K key) {
         return _find_lesser(this->root, key);
     }
 
@@ -93,7 +87,7 @@ struct AVL {
     returns a pointer to the largest element > key
     if no such element exists, returns nullptr
     */
-    inline KV* find_greater(K key) {
+    inline Node<K,V>* find_greater(K key) {
         return _find_greater(this->root, key);
     }
 
@@ -181,11 +175,11 @@ struct AVL {
     /*
     see find_lesser
     */
-    static KV* _find_lesser(Node<K, V> *r, K key) {
+    static Node<K,V>* _find_lesser(Node<K, V> *r, K key) {
         if (r == nullptr) return nullptr;
         if (r->key < key) {
-            KV *right_res = _find_lesser(r->right, key);
-            return right_res == nullptr ? r->getKV() : right_res;
+            Node<K,V> *right_res = _find_lesser(r->right, key);
+            return right_res == nullptr ? r : right_res;
         } else {
             return _find_lesser(r->left, key);
         }
@@ -194,11 +188,11 @@ struct AVL {
     /*
     see find_greater
     */
-    static KV* _find_greater(Node<K, V> *r, K key) {
+    static Node<K,V>* _find_greater(Node<K, V> *r, K key) {
         if (r == nullptr) return nullptr;
         if (r->key > key) {
-            KV *left_res = _find_greater(r->left, key);
-            return left_res == nullptr ? r->getKV() : left_res;
+            Node<K,V> *left_res = _find_greater(r->left, key);
+            return left_res == nullptr ? r : left_res;
         } else {
             return _find_greater(r->right, key);
         }
