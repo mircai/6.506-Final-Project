@@ -1,0 +1,14 @@
+OPT = -O3 -g
+CFLAGS = -DEDGELONG -mcx16 $(OPT) -ldl -std=c++17 -march=native -Wall -Wno-subobject-linkage -DUSEMALLOC -DNDEBUG
+PFLAGS = -DHOMEGROWN -pthread
+
+CC = g++
+
+% : %.cpp
+	$(CC) $(CFLAGS) $(PFLAGS) -o $@ $<
+
+
+.PHONY : clean
+
+clean:
+	rm -f *.o $(ALL)

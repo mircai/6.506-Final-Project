@@ -5,16 +5,28 @@ using namespace std;
 
 #define print(v) {cout<<((v)->key)<<" "; for(auto&i:((v)->value))cout<<i<<" ";cout<<endl;}
 
-AVL<int, CTree<int>> load_csr_to_tree(Graph &g, int b) {
+AVL<int, CTree<int>> load_csr_to_tree(Graph &g) {
     // make into tree
+    Timer t;
+    t.Start();
     AVL<int, CTree<int>> tree;
+    // int tot_edges = 0;
     for(int i = 0; i < g.n_vertices; i ++){
         int n_edges = g.get_num_edges(i);
+        int b = max(100, (int)sqrt(n_edges)); // dynamic b
         int *edge_list = g.get_edges(i);
+        // tot_edges = max(tot_edges, n_edges);
+        // if (i % 100000 == 0){
+        //     cout << "vertex " << i << endl;
+        //     cout << "\tmax #e=" << tot_edges << endl;
+        // }
         CTree<int> ctree(edge_list, n_edges, b);
-        // print(ctree.avl->root);
-        tree = *tree.insert(i, ctree);
+        // mutable initialization
+        tree.root = tree._insert(tree.root, i, ctree, true);
     }
+    t.Stop();
+
+    cout << "Finished building in " << t.Seconds() << " sec" << endl;
     return tree;
 }
 
@@ -67,9 +79,8 @@ int main(int argc, char* argv[]) {
     string in_prefix = argv[1];
     Graph g;
     load_graph(g, in_prefix);
-    int block_size = 3;
     int total_nodes = g.n_vertices;
-    AVL<int, CTree<int>> tree = load_csr_to_tree(g, block_size);
+    AVL<int, CTree<int>> tree = load_csr_to_tree(g);
 
     // randomly sample initial transits
     int n_samples = num_samples();
@@ -105,4 +116,5 @@ int main(int argc, char* argv[]) {
         total_size += _size;
         _size *= sample_size(step);
     }
+    cout << endl;
 }

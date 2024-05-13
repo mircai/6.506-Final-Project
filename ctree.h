@@ -123,28 +123,30 @@ struct CTree {
         }
         return {le, g};
     }
-    CTree insert(T val) {
-        CTree res(*this);
+    CTree* insert(T val) {
+        auto res = new CTree<T>(*this);
         auto h = std::hash<T>{}(val);
         // pointer to next smallest head
-        auto p = res.avl->find_lesser(val);
+        auto &prefix = res->prefix;
+        auto &avl = res->avl;
+        auto p = avl->find_lesser(val);
         if (h % b == 0) {
             if (p == nullptr) {
-                auto [le, g] = splitChunk(res.prefix, val);
-                res.prefix = le;
-                res.avl = res.avl->insert(val, g);
+                auto [le, g] = splitChunk(prefix, val);
+                prefix = le;
+                avl = avl->insert(val, g);
             } else {
                 auto [le, g] = splitChunk(p->value, val);
-                res.avl = res.avl->insert(p->key, le);
-                res.avl->root = res.avl->_insert(res.avl->root, val, g, true);
+                avl = avl->insert(p->key, le);
+                avl->root = avl->_insert(avl->root, val, g, true);
             }
         } else {
             if (p == nullptr) {
-                res.prefix.push_back(val);
+                prefix.push_back(val);
             } else {
                 TT new_tail = p->value; // '=' copies vector
                 new_tail.push_back(val);
-                res.avl = res.avl->insert(p->key, new_tail);
+                avl = avl->insert(p->key, new_tail);
             }
         }
         return res;

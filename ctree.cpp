@@ -8,8 +8,8 @@ int main() {
     vector<int> vals = {1,2,3,4,5,6,7,8,9,14};
     cout << "hi\n";
     CTree<int> t(vals, 3);
-    auto t2 = t.insert(0);
-    auto t3 = t2.insert(12);
+    auto t2 = *t.insert(0);
+    auto t3 = *t2.insert(12);
     auto avl = t.avl;
     auto avl2 = t2.avl;
     auto avl3 = t3.avl;
