@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) {
     AVL<int, CTree<int>> tree = load_csr_to_tree(g);
 
     // randomly sample initial transits
-    int n_samples = num_samples();
+    int n_samples = 40; //num_samples();
     int n_threads = 1;
 
     vector<int> inits = get_initial_transits(sample_size(-1) * n_samples, total_nodes);
