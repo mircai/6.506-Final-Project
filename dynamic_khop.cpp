@@ -97,6 +97,8 @@ int main(int argc, char* argv[]) {
     for (int bi = 0; bi < total_nodes; bi += bs) {
       // cout << "inserting batch " << (bi / bs) << endl;
       int end = min(bi + bs, total_nodes);
+      int num_edges = 0;
+      int num_old_edges = 0;
       for (int i = bi; i < end; i ++) {
         int n_edges = g.get_num_edges(i);
         int *edge_list = g.get_edges(i);
@@ -108,8 +110,10 @@ int main(int argc, char* argv[]) {
           }
           if (x < bi) {
             tree.get_node(x)->value._insert_mutable(i);
+            num_old_edges ++;
           }
         }
+        num_edges += edges.size();
         // for (auto&j : edges[i]) {
         //   auto p = tree.get_node(j);
         //   p->value._insert_mutable(i);
@@ -118,7 +122,7 @@ int main(int argc, char* argv[]) {
         CTree<int> ctree(edges, b);
         tree.root = tree._insert(tree.root, i, ctree, true);
       }
-      cout << (seconds() - starttime) << endl;
+      cout << (seconds() - starttime) << "\t" << num_edges << "\t" << num_old_edges << endl;
     }
 
     cout << "Finished building in " << (seconds()-starttime) << " sec" << endl;
