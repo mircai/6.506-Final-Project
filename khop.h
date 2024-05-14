@@ -1,6 +1,6 @@
 #include "ctree.h"
 #include <vector>
-#include <ctime>  
+#include <ctime>
 #include <set>
 #include <random>
 #include <numeric>
@@ -16,10 +16,10 @@ inline int nptr() {
 
 inline int sample_size(int step) {
     if (step == -1) return 1;
-    // if (step == 0) return 25;
-    // return 10;
-    if (step == 0) return 2;
-    return 3;
+    if (step == 0) return 25;
+    return 10;
+    // if (step == 0) return 2;
+    // return 3;
 }
 
 inline int steps() {

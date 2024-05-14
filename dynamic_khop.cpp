@@ -5,21 +5,24 @@ using namespace std;
 
 #define print(v) {cout<<((v)->key)<<" "; for(auto&i:((v)->value))cout<<i<<" ";cout<<endl;}
 
+inline double seconds() {
+  struct timeval tp;
+  struct timezone tzp;
+  gettimeofday(&tp, &tzp);
+  return ((double)tp.tv_sec + (double)tp.tv_usec * 1.e-6);
+}
+
 AVL<int, CTree<int>> load_csr_to_tree(Graph &g) {
     // make into tree
     Timer t;
     t.Start();
     AVL<int, CTree<int>> tree;
+    cout << "test weofijowfjialwdijf" << endl;
     // int tot_edges = 0;
     for(int i = 0; i < g.n_vertices; i ++){
         int n_edges = g.get_num_edges(i);
         int b = max(100, (int)sqrt(n_edges)); // dynamic b
         int *edge_list = g.get_edges(i);
-        // tot_edges = max(tot_edges, n_edges);
-        // if (i % 100000 == 0){
-        //     cout << "vertex " << i << endl;
-        //     cout << "\tmax #e=" << tot_edges << endl;
-        // }
         CTree<int> ctree(edge_list, n_edges, b);
         // mutable initialization
         tree.root = tree._insert(tree.root, i, ctree, true);
@@ -63,26 +66,62 @@ void khop(AVL<K, V> &graph, vector<K> &all_transits, int n_samples) {
 }
 
 int main(int argc, char* argv[]) {
-    // // create example graph in fig 4 of aspen paper
-    // vector<vector<int>> adj_list = {{1,2}, {0,2}, {0,1,3,4,5}, {2,5}, {2,5}, {2,3,4}};
-    // set<int> heads = {1,2};
-    // int total_nodes = 6;
-
-    // AVL<int, CTree<int>> tree;
-    // for(int i = 0; i < total_nodes; i ++){
-    //     CTree<int> ctree(heads, adj_list[i]);
-    //     // print(ctree.avl->root);
-    //     tree = *tree.insert(i, ctree);
-    // }
-
     // load graph given in argument into tree rep
     string in_prefix = argv[1];
     Graph g;
     cout << "loading graph" << endl;
     load_graph(g, in_prefix);
     cout << "loaded graph" << endl;
+
     int total_nodes = g.n_vertices;
-    AVL<int, CTree<int>> tree = load_csr_to_tree(g);
+    AVL<int, CTree<int>> tree;
+
+    // direct the graph
+    // vector<vector<int>> edges(total_nodes);
+    // for (int i = 0; i < total_nodes; i ++) {
+    //   int n_edges = g.get_num_edges(i);
+    //   int *edge_list = g.get_edges(i);
+    //   for (int j = 0; j < n_edges; j ++) {
+    //     if (i > j) edges[i].push_back(j);
+    //   }
+    // }
+
+    // cout << "done directing graph" << endl;
+
+    int b = 100; // EXPERIMENT WITH THIS
+    // batch size = 10% of graph
+    int bs = total_nodes / 10;
+
+    double starttime = seconds();
+
+    for (int bi = 0; bi < total_nodes; bi += bs) {
+      // cout << "inserting batch " << (bi / bs) << endl;
+      int end = min(bi + bs, total_nodes);
+      for (int i = bi; i < end; i ++) {
+        int n_edges = g.get_num_edges(i);
+        int *edge_list = g.get_edges(i);
+        vector<int> edges;
+        for (int j = 0; j < n_edges; j ++) {
+          int x = edge_list[j];
+          if (x < end) {
+            edges.push_back(x);
+          }
+          if (x < bi) {
+            tree.get_node(x)->value._insert_mutable(i);
+          }
+        }
+        // for (auto&j : edges[i]) {
+        //   auto p = tree.get_node(j);
+        //   p->value._insert_mutable(i);
+        // }
+        // CTree<int> ctree(edge_list, n_edges, b);
+        CTree<int> ctree(edges, b);
+        tree.root = tree._insert(tree.root, i, ctree, true);
+      }
+      cout << (seconds() - starttime) << endl;
+    }
+
+    cout << "Finished building in " << (seconds()-starttime) << " sec" << endl;
 
     // randomly sample initial transits
     int n_samples = 40; //num_samples();
@@ -105,18 +144,18 @@ int main(int argc, char* argv[]) {
     // perform khop sampling
     khop(tree, transits, n_samples);
 
-    cout << "Completed sampling!" << endl;
-    cout << "results\n";
-    int _size = sample_size(-1) * n_samples;
-    int total_size = 0;
-    for (int step = 0; step <= steps(); step++) {
-        cout << "\n";
-        for (int i = 0; i < _size; i++) {
-            cout << transits[i + total_size] << " ";
-            // cout << i + p_size << " ";
-        }
-        total_size += _size;
-        _size *= sample_size(step);
-    }
-    cout << endl;
+    // cout << "Completed sampling!" << endl;
+    // cout << "results\n";
+    // int _size = sample_size(-1) * n_samples;
+    // int total_size = 0;
+    // for (int step = 0; step <= steps(); step++) {
+    //     cout << "\n";
+    //     for (int i = 0; i < _size; i++) {
+    //         cout << transits[i + total_size] << " ";
+    //         // cout << i + p_size << " ";
+    //     }
+    //     total_size += _size;
+    //     _size *= sample_size(step);
+    // }
+    // cout << endl;
 }

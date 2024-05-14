@@ -123,6 +123,31 @@ struct CTree {
         }
         return {le, g};
     }
+    CTree* _insert_mutable(T val) {
+        auto h = std::hash<T>{}(val);
+        // pointer to next smallest head
+        auto p = avl->find_lesser(val);
+        if (h % b == 0) {
+            if (p == nullptr) {
+                auto [le, g] = splitChunk(prefix, val);
+                prefix = le;
+                avl->root = avl->_insert(avl->root, val, g, true);
+            } else {
+                auto [le, g] = splitChunk(p->value, val);
+                avl->root = avl->_insert(avl->root, p->key, le, true);
+                avl->root = avl->_insert(avl->root, val, g, true);
+            }
+        } else {
+            if (p == nullptr) {
+                prefix.push_back(val);
+            } else {
+                TT new_tail = p->value; // '=' copies vector
+                new_tail.push_back(val);
+                avl->root = avl->_insert(avl->root, p->key, new_tail, true);
+            }
+        }
+        return this;
+    }
     CTree* insert(T val) {
         auto res = new CTree<T>(*this);
         auto h = std::hash<T>{}(val);

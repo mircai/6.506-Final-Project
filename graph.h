@@ -47,7 +47,7 @@ T* custom_alloc_global(size_t elements) {
 }
 
 template <typename T>
-static void read_file(Graph &g, std::string fname, T *&pointer, int length) {
+static void read_file(Graph &g, std::string fname, T *&pointer, int64_t length) {
     pointer = custom_alloc_global<T>(length);
     assert(pointer);
     std::ifstream inf(fname.c_str(), std::ios::binary);
@@ -68,9 +68,9 @@ void load_row_pointers(Graph &g, std::string prefix)
 void load_graph_data(Graph &g, std::string prefix) {
     // read row pointers
     load_row_pointers(g, prefix);
-
     // read column indices
     read_file(g, prefix + ".edge.bin", g.edges, g.n_edges);
+    cout << "done loading graph data" << endl;
 }
 
 void load_graph(Graph &g, std::string prefix) {
