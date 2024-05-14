@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
 
     // cout << "done directing graph" << endl;
 
-    int b = 100; // EXPERIMENT WITH THIS
+    int b = 128; // EXPERIMENT WITH THIS
     // batch size = 10% of graph
     int bs = total_nodes / 10;
 
@@ -104,15 +104,18 @@ int main(int argc, char* argv[]) {
         int *edge_list = g.get_edges(i);
         vector<int> edges;
         for (int j = 0; j < n_edges; j ++) {
+          // int b = 0;
           int x = edge_list[j];
           if (x < end) {
             edges.push_back(x);
+            // if (x >= bi) b ++;
           }
           if (x < bi) {
             tree.get_node(x)->value._insert_mutable(i);
             num_old_edges ++;
           }
         }
+        int b = max(500, (int)sqrt(n_edges) * 10);
         num_edges += edges.size();
         // for (auto&j : edges[i]) {
         //   auto p = tree.get_node(j);

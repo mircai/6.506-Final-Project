@@ -141,9 +141,9 @@ struct CTree {
             if (p == nullptr) {
                 prefix.push_back(val);
             } else {
-                TT new_tail = p->value; // '=' copies vector
+                TT &new_tail = p->value; // '=' copies vector
                 new_tail.push_back(val);
-                avl->root = avl->_insert(avl->root, p->key, new_tail, true);
+                // avl->root = avl->_insert(avl->root, p->key, new_tail, true);
             }
         }
         return this;

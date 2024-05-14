@@ -105,18 +105,18 @@ int main(int argc, char* argv[]) {
     // perform khop sampling
     khop(tree, transits, n_samples);
 
-    cout << "Completed sampling!" << endl;
-    cout << "results\n";
-    int _size = sample_size(-1) * n_samples;
-    int total_size = 0;
-    for (int step = 0; step <= steps(); step++) {
-        cout << "\n";
-        for (int i = 0; i < _size; i++) {
-            cout << transits[i + total_size] << " ";
-            // cout << i + p_size << " ";
-        }
-        total_size += _size;
-        _size *= sample_size(step);
-    }
-    cout << endl;
+    // cout << "Completed sampling!" << endl;
+    // cout << "results\n";
+    // int _size = sample_size(-1) * n_samples;
+    // int total_size = 0;
+    // for (int step = 0; step <= steps(); step++) {
+    //     cout << "\n";
+    //     for (int i = 0; i < _size; i++) {
+    //         cout << transits[i + total_size] << " ";
+    //         // cout << i + p_size << " ";
+    //     }
+    //     total_size += _size;
+    //     _size *= sample_size(step);
+    // }
+    // cout << endl;
 }
